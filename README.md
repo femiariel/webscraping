@@ -11,7 +11,7 @@ Ce projet a pour but de comparer les prix des iPhones sur deux plateformes en li
 Pour cloner le projet sur votre ordinateur, allez dans votre terminal et saissisez la commande :
 
 ```
-git clone https://gitlab.com/ariel-gasyd-anifath/webscraping.git
+git clone https://github.com/femiariel/webscraping.git
 ``` 
 
 ## Problème de connexion  MySQL
