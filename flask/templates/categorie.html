@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Catégories</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+                .confetti {
+            position: fixed;
+            pointer-events: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--color);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(var(--rotate)) scale(var(--scale));
+            animation: confetti-animation 5s ease-out forwards;
+        }
+
+        @keyframes confetti-animation {
+            0% {
+                transform: translate(-50%, -50%) rotate(var(--rotate)) scale(var(--scale));
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--rotate)) scale(var(--scale));
+                opacity: 0;
+            }
+        }
+
+        h1 {
+            margin-top: 30px;
+            text-align: center;
+            color: #fffaf5;
+            /* autres styles */
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 12px 0;
+            background-color: #FFE4E1;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #293133;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 8px 16px;
+            text-shadow: none;
+        }
+        #products-container {
+        min-height: 400vh; /* Hauteur minimale fixée à la hauteur de la fenêtre de visualisation */
+        /* Autres styles ici */
+        }
+
+        .navbar-brand {
+            margin-right: 30px;
+            color: #FFF0F5;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+        body {
+            background-color: #F2E8DC;
+            color: white;
+            padding-top: 70px;
+        }
+        .card {
+            margin-bottom: 20px;
+            background-color: #FDF4E3;
+            color: black;
+        }
+        .card img {
+            width: 100%;
+        }
+        .card-title {
+            margin-bottom: 0;
+        }
+
+        .view-button {
+            background-color: #B76E79;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .snowflake {
+            color: #FFF;
+            font-size: 1em;
+            position: fixed;
+            top: -2em;
+            z-index: 9999;
+            opacity: 0.8;
+            transform: rotate(45deg);
+            animation: fall linear;
+        }
+        @keyframes fall {
+            0% { top: -10% }
+            100% { top: 100% }
+        }
+        .etat-title {
+            margin-top: 80px;
+            margin-bottom: 100px;
+            color: black;
+            font-size: 30px;
+        }
+        .etat-highlighted {
+            color: #ff65a3;
+            font-size: 35px;
+            transition: color 0.3s ease, font-size 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #FFE4E1;">
+            <a class="navbar-brand" href="#" style="color: #FFF0F5; font-size: 1.6rem; font-weight: bold; text-shadow: 2px 2px 4px #000000;">Izaga</a>
+            <a class="nav-link" href="/" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 30px; margin-top: 0.1px;">Accueil</a>
+            <a class="nav-link" href="/categorie" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 20px; margin-top: 0.1px;">Categories</a>
+            <a class="nav-link" href="/news" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 20px; margin-top: 0.1px;">Actualités</a>
+        </nav>     
+    </header>
+    
+    <h1>Best deals</h1>
+    <!-- Container for product cards -->
+    <div class="container" id="products-container">
+        <!-- Les produits seront insérés ici, groupés par état -->
+    </div>
+
+    <!-- jQuery and Bootstrap scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- JavaScript pour charger les données et gérer l'affichage des produits -->
+    <script>
+        $(document).ready(function() {
+            loadProductsGroupedByState();
+        });
+
+        function loadProductsGroupedByState() {
+            $.ajax({
+                url: '/categories',  // URL pour charger les produits groupés par état
+                type: 'GET',
+                success: function(groupedData) {
+                    $('#products-container').empty();  // Videz le conteneur avant de charger les nouveaux produits
+
+                    for (const state in groupedData) {
+                        var stateDiv = '<div id="' + state + '-section"><h3 class="etat-title">' + state + '</h3><div class="row">';
+                        groupedData[state].forEach(function(product, index) {
+                            stateDiv += '<div class="col-md-4">' +
+                                        '<div class="card" style="width: 18rem;">' +
+                                            '<img src="' + product.image_url + '" class="card-img-top mx-auto d-block" style="max-width:80px; height:auto;" alt="Product Image">' +
+                                            '<div class="card-body">' +
+                                                '<a href="' + product.product_url + '" class="btn btn-primary view-button">Voir</a>' +
+                                                '<p class="card-text"><small class="text-muted">Vendeur: ' + product.seller + '</small></p>' +
+                                                '<p class="card-text"><small class="text-muted">Prix: ' + product.price + ' €</small></p>'+
+                                                '<p class="card-text"><small class="text-muted">Smartphone: ' + product.title + '</small></p>'+
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>';
+
+                            if ((index + 1) % 3 === 0) {
+                                stateDiv += '</div><div class="row">';
+                            }
+                        });
+                        stateDiv += '</div></div>';
+                        $('#products-container').append(stateDiv);
+                    }
+                },
+                error: function() {
+                    alert('Erreur lors du chargement des produits');
+                }
+            });
+        }
+
+        $(window).on('scroll', function() {
+            var scrollDistance = $(window).scrollTop();
+            var currentTitle = "";
+
+            $('.etat-title').each(function() {
+                if ($(this).offset().top < scrollDistance + 70) {
+                    currentTitle = $(this).text();
+                }
+            });
+
+            if (currentTitle) {
+                $('.navbar-brand').text(currentTitle);
+                $('.nav-link').text(' '); 
+            } else {
+                $('.navbar-brand').text('Izaga');
+                $('.nav-link:eq(0)').text('Accueil');
+                $('.nav-link:eq(1)').text('Categories');
+                $('.nav-link:eq(2)').text('Actualités');
+            }
+
+            // Autres règles de gestion de la navbar
+        });
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            for (let i = 0; i < 200; i++) {
+                createConfetti();
+            }
+        });
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.setProperty('--color', getRandomColor());
+            confetti.style.setProperty('--x', `${(Math.random() - 0.5) * 5000}px`);
+            confetti.style.setProperty('--y', `${(Math.random() - 0.5) * 5000}px`);
+            confetti.style.setProperty('--rotate', `${Math.random() * 360}deg`);
+            confetti.style.setProperty('--scale', `${Math.random() * 0.5 + 0.5}`);
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 1500);
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff0', '#f0f', '#0ff', '#f00', '#0f0', '#00f', '#ff8c00', '#9400d3'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+
+        function createSnowflake() {
+            const snowFlake = document.createElement('div');
+            snowFlake.classList.add('snowflake');
+            snowFlake.innerText = '❄';
+            snowFlake.style.left = Math.random() * 100 + 'vw';
+            snowFlake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowFlake.style.opacity = Math.random();
+            snowFlake.style.fontSize = Math.random() * 10 + 10 + 'px';
+
+            document.body.appendChild(snowFlake);
+
+            setTimeout(() => {
+                snowFlake.remove();
+            }, 5000);
+        }
+        // Fonction pour créer des flocons de neige
+        setInterval(createSnowflake, 100);
+    </script>
+</body>
+</html>

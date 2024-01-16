@@ -1,0 +1,6 @@
+pymysql
+Flask
+flask-cors
+flask-mysql
+mysqlclient
+requests

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Actualités Apple</title>
+    <style>
+                .confetti {
+            position: fixed;
+            pointer-events: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--color);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(var(--rotate)) scale(var(--scale));
+            animation: confetti-animation 5s ease-out forwards;
+        }
+
+        @keyframes confetti-animation {
+            0% {
+                transform: translate(-50%, -50%) rotate(var(--rotate)) scale(var(--scale));
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--rotate)) scale(var(--scale));
+                opacity: 0;
+            }
+        }
+
+        
+         h1 {
+            text-align: center;
+            color: #fffaf5;
+            /* autres styles */
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding-top: 100px; /* Augmentez le padding pour éviter que le contenu soit masqué par la navbar */
+            background-color: #F2E8DC;
+            color: #333;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 12px 0; /* Ajustez la hauteur de la navbar si nécessaire */
+            background-color: #FFE4E1;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #293133;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 8px 16px;
+            text-shadow: none; /* Supprimé pour 'Accueil' et 'Catégories' */
+        }
+
+        .navbar-brand {
+            margin-right: 30px;
+            color: #FFF0F5;
+            text-shadow: 2px 2px 4px #000000; /* Gardé uniquement pour 'Izaga' */
+        }
+
+        /* Styles pour .article, .article img, etc... */
+
+        #news-container {
+            padding: 0 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+        }
+
+        .article {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 300px;
+            margin-bottom: 20px;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .article img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .article h2 {
+            font-size: 18px;
+            padding: 15px;
+            margin: 0;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .article p {
+            padding: 0 15px 15px;
+        }
+
+        .article a {
+            display: block;
+            background-color: #ffe4e8;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .snowflake {
+            color: #87ceeb;
+            font-size: 1em;
+            position: fixed;
+            top: -2em;
+            z-index: 9999;
+            opacity: 0.8;
+            transform: rotate(45deg);
+            animation: fall linear;
+        }
+
+        @keyframes fall {
+            0% { top: -10% }
+            100% { top: 100% }
+        }
+
+        .article a:hover {
+            background-color: #FDF4E3;
+        }
+
+        /* Media queries pour les styles responsifs */
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #FFE4E1;">
+            <a class="navbar-brand" style="color: #FFF0F5; font-size: 1.6rem; font-weight: bold; text-shadow: 2px 2px 4px #000000;">Izaga</a>
+            <a class="nav-link" href="/" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 30px; margin-top: 0.1px;">Accueil</a>
+            <a class="nav-link" href="/categorie" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 20px; margin-top: 0.1px;">Categories</a>
+            <a class="nav-link" href="/news" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 20px; margin-top: 0.1px;">Actualités</a>
+        </nav>     
+    </header>
+   
+    <h1>Actualités Apple</h1>
+    <div id="news-container">
+        <!-- La boucle pour générer les articles -->
+        {% for article in articles %}
+        <div class="article">
+            <h2>{{ article['title'] }}</h2>
+            <img src="{{ article['urlToImage'] }}" alt="Article Image">
+            <p>{{ article['description'] }}</p>
+            <a href="{{ article['url'] }}" target="_blank">Lire la suite</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            for (let i = 0; i < 200; i++) {
+                createConfetti();
+            }
+        });
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.setProperty('--color', getRandomColor());
+            confetti.style.setProperty('--x', `${(Math.random() - 0.5) * 5000}px`);
+            confetti.style.setProperty('--y', `${(Math.random() - 0.5) * 5000}px`);
+            confetti.style.setProperty('--rotate', `${Math.random() * 360}deg`);
+            confetti.style.setProperty('--scale', `${Math.random() * 0.5 + 0.5}`);
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 1500);
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff0', '#f0f', '#0ff', '#f00', '#0f0', '#00f', '#ff8c00', '#9400d3'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+
+
+
+
+        function createSnowflake() {
+            const snowFlake = document.createElement('div');
+            snowFlake.classList.add('snowflake');
+            snowFlake.innerText = '❄';
+            snowFlake.style.left = Math.random() * 100 + 'vw';
+            // Augmentation de la taille des flocons
+            snowFlake.style.fontSize = Math.random() * 20 + 15 + 'px'; // Taille des flocons entre 15px et 35px
+            // Augmentation de la vitesse de chute
+            snowFlake.style.animationDuration = Math.random() * 2 + 1 + 's'; // Durée entre 1 et 3 secondes
+            snowFlake.style.opacity = Math.random();
+    
+            document.body.appendChild(snowFlake);
+    
+            setTimeout(() => {
+                snowFlake.remove();
+            }, 5000);
+        }
+    
+        setInterval(createSnowflake, 100);
+    </script>
+    
+</body>
+</html>

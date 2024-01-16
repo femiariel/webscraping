@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Prix iPhone</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+               .confetti {
+            position: fixed;
+            pointer-events: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--color);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(var(--rotate)) scale(var(--scale));
+            animation: confetti-animation 5s ease-out forwards;
+        }
+
+        @keyframes confetti-animation {
+            0% {
+                transform: translate(-50%, -50%) rotate(var(--rotate)) scale(var(--scale));
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--rotate)) scale(var(--scale));
+                opacity: 0;
+            }
+        }
+
+
+        
+        body {
+            background-color: #F2E8DC;
+            color: white;
+            padding-top: 70px;
+        }
+        .card-container {
+            padding: 20px;
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 12px 0; /* Ajustez la hauteur de la navbar si nécessaire */
+            background-color: #FFE4E1;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #293133;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 8px 16px;
+            text-shadow: none; /* Supprimé pour 'Accueil' et 'Catégories' */
+        }
+
+        .navbar-brand {
+            margin-right: 30px;
+            color: #FFF0F5;
+            text-shadow: 2px 2px 4px #000000; /* Gardé uniquement pour 'Izaga' */
+        }
+
+        .card {
+            margin-bottom: 20px;
+            background-color: #FDF4E3;
+            color: black;
+        }
+        .card img {
+            width: 100%;
+        }
+
+        .btn-rose {
+            background-color: #ffe4e8; 
+            color: white;
+            margin-top: 20;
+        }
+        .btn-rose:hover {
+            background-color: #ff65a3; /* Couleur rose un peu plus foncée au survol */
+            color: white;
+            margin-top: 20;
+        }
+
+        .card-title {
+            margin-bottom: 0;
+        }
+
+        .view-button {
+            background-color: #B76E79;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .snowflake {
+            color: #FFF;
+            font-size: 1em;
+            position: fixed;
+            top: -2em;
+            z-index: 9999;
+            opacity: 0.8;
+            transform: rotate(45deg);
+            animation: fall linear;
+        }
+        .buttons-container {
+            text-align: right;
+            margin-right: 50px;
+            margin-bottom: 20px;
+            margin-top: 15px;
+         }
+         .buttons-container button:first-child {
+            margin-right: 20px;
+         }
+        @keyframes fall {
+            0% { top: -10% }
+            100% { top: 100% }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar avec texte cliquable et boutons de tri -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #FFE4E1;">
+            <a class="navbar-brand" style="color: #FFF0F5; font-size: 1.6rem; font-weight: bold; text-shadow: 2px 2px 4px #000000;">Izaga</a>
+            <a class="nav-link" href="/" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 30px; margin-top: 0.1px;">Accueil</a>
+            <a class="nav-link" href="/categorie" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 20px; margin-top: 0.1px;">Categories</a>
+            <a class="nav-link" href="/news" style="color: #293133; font-size: 1.1rem; font-weight: bold; margin-left: 20px; margin-top: 0.1px;">Actualités</a>
+        </nav>   
+        <div class="buttons-container">
+            <button id="sortAsc" class="btn btn-rose">Tri Croissant</button>
+            <button id="sortDesc" class="btn btn-rose">Tri Décroissant</button>
+        </div>        
+    </header>
+    
+    <!-- Container for product cards -->
+    <div class="container">
+        <div class="row" id="products-container">
+            <!-- Product cards will be inserted here -->
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- JavaScript pour charger et trier les données -->
+    <script>
+        $(document).ready(function() {
+            // Fonction pour mélanger les données
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // Fonction pour trier les données
+            function sortData(data, ascending = true) {
+                return data.sort(function(a, b) {
+                    var priceA = parseFloat(a.price.replace('€', '').replace(',', '.'));
+                    var priceB = parseFloat(b.price.replace('€', '').replace(',', '.'));
+                    return ascending ? priceA - priceB : priceB - priceA;
+                });
+            }
+
+            // Charger et mélanger les données
+            $.ajax({
+                url: '/prices',
+                type: 'GET',
+                success: function(data) {
+                    var shuffledData = shuffleArray(data);
+                    insertDataIntoDOM(shuffledData);
+                },
+                error: function() {
+                    alert('Erreur lors du chargement des données');
+                }
+            });
+
+            // Fonction pour insérer les données dans le DOM
+            function insertDataIntoDOM(data) {
+                $('#products-container').empty(); // Vider le container avant d'ajouter les nouveaux éléments
+                data.forEach(function(product) {
+                    var cardHtml = '<div class="col-md-4">' +
+                                        '<div class="card" style="width: 18rem;">' +
+                                            '<img src="' + product.image_url + '" class="card-img-top mx-auto d-block" style="max-width:80px; height:auto;" alt="Product Image">' +
+                                            '<div class="card-body">' +
+                                                '<a href="' + product.product_url + '" class="btn btn-primary view-button">Voir</a>' +
+                                                '<p class="card-text"><small class="text-muted">Vendeur: ' + product.seller + '</small></p>' +
+                                                '<p class="card-text"><small class="text-muted">Prix: ' + product.price + ' €</small></p>'+
+                                                '<p class="card-text"><small class="text-muted">Smartphone: ' + product.title + '</small></p>' +
+                                            '</div>' +
+                                        '</div>' +
+                                      '</div>';
+                    $('#products-container').append(cardHtml);
+                });
+            }
+
+            // Écouteurs pour les boutons de tri
+            $('#sortAsc').click(function() {
+                $.ajax({
+                    url: '/prices',
+                    type: 'GET',
+                    success: function(data) {
+                        var sortedData = sortData(data, true);
+                        insertDataIntoDOM(sortedData);
+                    }
+                });
+            });
+
+            $('#sortDesc').click(function() {
+                $.ajax({
+                    url: '/prices',
+                    type: 'GET',
+                    success: function(data) {
+                        var sortedData = sortData(data, false);
+                        insertDataIntoDOM(sortedData);
+                    }
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            for (let i = 0; i < 200; i++) {
+                createConfetti();
+            }
+        });
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.setProperty('--color', getRandomColor());
+            confetti.style.setProperty('--x', `${(Math.random() - 0.5) * 5000}px`);
+            confetti.style.setProperty('--y', `${(Math.random() - 0.5) * 5000}px`);
+            confetti.style.setProperty('--rotate', `${Math.random() * 360}deg`);
+            confetti.style.setProperty('--scale', `${Math.random() * 0.5 + 0.5}`);
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 1500);
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff0', '#f0f', '#0ff', '#f00', '#0f0', '#00f', '#ff8c00', '#9400d3'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+
+
+              function createSnowflake() {
+            const snowFlake = document.createElement('div');
+            snowFlake.classList.add('snowflake');
+            snowFlake.innerText = '❄';
+            snowFlake.style.left = Math.random() * 100 + 'vw';
+            snowFlake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowFlake.style.opacity = Math.random();
+            snowFlake.style.fontSize = Math.random() * 10 + 10 + 'px';
+
+            document.body.appendChild(snowFlake);
+
+            setTimeout(() => {
+                snowFlake.remove();
+            }, 5000);
+        }
+
+        setInterval(createSnowflake, 100);
+    </script>
+</body>
+</html>
